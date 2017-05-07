@@ -2,7 +2,7 @@
 //  AppDelegate.swift
 //  G-Shot
 //
-//  Created by Artem Orynko on 5/5/17.
+//  Created by Alexey on 5/5/17.
 //  Copyright © 2017 GoTo Inc. All rights reserved.
 //
 
@@ -13,9 +13,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
 
-
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-        // Override point for customization after application launch.
+
+        window = UIWindow(frame: UIScreen.main.bounds)
+        window?.makeKeyAndVisible()
+
+        let navigationController = UINavigationController(rootViewController: RecordViewController())
+        navigationController.navigationBar.isHidden = true
+        
+        window?.rootViewController = navigationController
         return true
     }
 
