@@ -7,7 +7,12 @@ import Foundation
 
 class KeychainWrapper {
     // Supply an optional Keychain access group to access shared Keychain items.
-    var accessGroup: String?
+    var accessGroup: String? {
+        let accessGroup = Bundle.main.bundleIdentifier
+        let appIdPrefix = "LT3MAR5838" //Bundle.main.object(forInfoDictionaryKey: "AppIdentifierPrefix")
+
+        return appIdPrefix + "." + accessGroup!
+    }
 
     /**
    Adds the text value in the keychain.
@@ -63,7 +68,7 @@ class KeychainWrapper {
             SecItemCopyMatching(queryLoad as CFDictionary, UnsafeMutablePointer($0))
         }
         if resultCodeLoad == noErr, let result = result as? Data {
-            if let keyValue = String(data: result, encoding: .utf8) as? String {
+            if let keyValue = String(data: result, encoding: .utf8) {
                 return keyValue
             }
         }
