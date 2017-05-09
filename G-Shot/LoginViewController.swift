@@ -182,7 +182,7 @@ class LoginViewController: UIViewController {
         KRProgressHUD.set(style: .black)
         KRProgressHUD.show(message: "Loading")
         if let login = loginTextField.text, let password = passwordTextField.text {
-            NetworkLayer.login(user: login, password: password) { success in
+            NetworkLayer.login(user: login, key: password) { success in
                 if !success {
                     DispatchQueue.main.async {
                         let errorString = NSLocalizedString("error", comment: "")

@@ -8,15 +8,55 @@ import KRProgressHUD
 
 class NetworkLayer {
 
-    static func login(user name: String, password: String, completion: @escaping (_ success: Bool) -> ()) {
-        let urlString = baseURL + userName + name + "&" + userPassword + password
+    static func getWatermarkURLs(user: String, key: String, completion: @escaping (_ success: Bool, [String]?) -> ()) {
+        let urlString = baseURL + userId + user + "&" + secure + key + "&files=1"
+        guard let url = URL(string: urlString) else {
+            completion(false, nil)
+            return
+        }
+        let request = URLRequest(url: url)
+        let session = URLSession.shared
+        let task = session.dataTask(with: request) { (data: Data?, response: URLResponse?, error: Error?) in
+            guard let httpResponse = response as? HTTPURLResponse else {
+                completion(false, nil)
+                return
+            }
+            if httpResponse.statusCode != 200 {
+                completion(false, nil)
+            }
+            guard let data = data else {
+                completion(false, nil)
+                return
+            }
+            var json: [String: String]?
+            do {
+                json = try JSONSerialization.jsonObject(with: data, options: .mutableContainers) as? [String: String]
+            } catch {
+                completion(false, nil)
+            }
+            if let json = json {
+                var watermarks: [String] = []
+                for watermark in json {
+                    let key = watermark.key
+                    if key.contains("apifile") {
+                        watermarks.append(watermark.value)
+                    }
+                }
+                completion(true, watermarks)
+            }
+         }
+        task.resume()
+    }
+
+    static func login(user name: String, key: String, completion: @escaping (_ success: Bool) -> ()) {
+        let urlString = baseURL + userId + name + "&" + secure + key
         guard let url = URL(string: urlString) else {
             completion(false)
             return
         }
         let request = URLRequest(url: url)
-        let urlSession = URLSession.shared
-        let task = urlSession.dataTask(with: request) { (data, response, error) in
+        let session = URLSession.shared
+        let task = session.dataTask(with: request) { (data, response, error) in
             guard let httpResponse = response as? HTTPURLResponse else {
                 completion(false)
                 return
@@ -58,7 +98,6 @@ class NetworkLayer {
                 }
             } catch {
                 completion(false)
-                return
             }
          }
         task.resume()
