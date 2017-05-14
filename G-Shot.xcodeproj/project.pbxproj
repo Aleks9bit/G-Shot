@@ -15,6 +15,8 @@
 		3C98AFE0CF7818E20DA4E5AB /* NetworkLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C98A9DFD0AFDBBFD25FB570 /* NetworkLayer.swift */; };
 		AC86040B1EBD9B93009ECA54 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC86040A1EBD9B93009ECA54 /* Constants.swift */; };
 		AC8604151EBDA0FA009ECA54 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = AC8604171EBDA0FA009ECA54 /* Localizable.strings */; };
+		ACB4B6641EC43FB10005727D /* extension+UIImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACB4B6631EC43FB10005727D /* extension+UIImage.swift */; };
+		ACB8F66E1EC86A370096FC0F /* SplashViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACB8F66D1EC86A370096FC0F /* SplashViewController.swift */; };
 		ACDD39291EBCF9CC0052D371 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACDD39281EBCF9CC0052D371 /* AppDelegate.swift */; };
 		ACDD392E1EBCF9CC0052D371 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = ACDD392C1EBCF9CC0052D371 /* Main.storyboard */; };
 		ACDD39331EBCF9CC0052D371 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = ACDD39311EBCF9CC0052D371 /* LaunchScreen.storyboard */; };
@@ -35,6 +37,8 @@
 		AC8604161EBDA0FA009ECA54 /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = Base; path = Base.lproj/Localizable.strings; sourceTree = "<group>"; };
 		AC8604181EBDA10D009ECA54 /* he */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = he; path = he.lproj/Localizable.strings; sourceTree = "<group>"; };
 		AC8604191EBDADD0009ECA54 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
+		ACB4B6631EC43FB10005727D /* extension+UIImage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "extension+UIImage.swift"; sourceTree = "<group>"; };
+		ACB8F66D1EC86A370096FC0F /* SplashViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SplashViewController.swift; sourceTree = "<group>"; };
 		ACDD39251EBCF9CC0052D371 /* G-Shot.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "G-Shot.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		ACDD39281EBCF9CC0052D371 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		ACDD392D1EBCF9CC0052D371 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -79,6 +83,7 @@
 				3C98AD5BBA43865FFFE49255 /* KeychainWrapper.swift */,
 				3C98AB18434E2540E6694582 /* G-Shot.entitlements */,
 				3C98A9DFD0AFDBBFD25FB570 /* NetworkLayer.swift */,
+				ACB4B6631EC43FB10005727D /* extension+UIImage.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -89,6 +94,16 @@
 				87642E5463662F0222602B12 /* Pods_G_Shot.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		ACB8F66C1EC86A150096FC0F /* Controller */ = {
+			isa = PBXGroup;
+			children = (
+				3C98A77D7F63A1A1FF7E8589 /* RecordViewController.swift */,
+				3C98A35D93CE82591675F6AB /* LoginViewController.swift */,
+				ACB8F66D1EC86A370096FC0F /* SplashViewController.swift */,
+			);
+			name = Controller;
 			sourceTree = "<group>";
 		};
 		ACDD391C1EBCF9CC0052D371 = {
@@ -118,8 +133,7 @@
 				ACDD39311EBCF9CC0052D371 /* LaunchScreen.storyboard */,
 				ACDD39341EBCF9CC0052D371 /* Info.plist */,
 				3C98A725EAA060AE76D8FC51 /* Helpers */,
-				3C98A77D7F63A1A1FF7E8589 /* RecordViewController.swift */,
-				3C98A35D93CE82591675F6AB /* LoginViewController.swift */,
+				ACB8F66C1EC86A150096FC0F /* Controller */,
 				AC86040A1EBD9B93009ECA54 /* Constants.swift */,
 				AC8604171EBDA0FA009ECA54 /* Localizable.strings */,
 				3C98A0F3E87BCAB349C17C48 /* View */,
@@ -262,6 +276,8 @@
 				AC86040B1EBD9B93009ECA54 /* Constants.swift in Sources */,
 				ACDD39291EBCF9CC0052D371 /* AppDelegate.swift in Sources */,
 				3C98A2C4EAB35261B2BD7666 /* KeychainWrapper.swift in Sources */,
+				ACB8F66E1EC86A370096FC0F /* SplashViewController.swift in Sources */,
+				ACB4B6641EC43FB10005727D /* extension+UIImage.swift in Sources */,
 				3C98AAF6A88A3DD75B949196 /* RecordViewController.swift in Sources */,
 				3C98A0B2DE64EF286FE71F74 /* LoginViewController.swift in Sources */,
 				3C98AEE7DFE61C606BC16D60 /* LeftRightPaddedTextField.swift in Sources */,

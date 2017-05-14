@@ -11,7 +11,7 @@ class LoginViewController: UIViewController {
     let titleLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "GreenShot"
+        label.text = "Green Shot"
         label.font = .boldSystemFont(ofSize: 56)
         label.textColor = secondColor
         label.textAlignment = .center

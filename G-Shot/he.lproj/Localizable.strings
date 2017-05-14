@@ -14,3 +14,7 @@ pictore_description = "Description";
 video_description = "Description";
 downloading_watermarks = "מוריד גלופות…";
 saving_images = "שומר תמונות…";
+invitation = "הזמנות";
+search = "חיפוש";
+myCard = "כרטיס ביקור שלי";
+support = "תמיכה";

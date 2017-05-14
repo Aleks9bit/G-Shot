@@ -14,3 +14,7 @@ pictore_description = "Description";
 video_description = "Description";
 downloading_watermarks = "Downloading...";
 saving_images = "Saving Photos...";
+invitation = "Invitations";
+search = "Search";
+myCard = "My Card";
+support = "Support";
