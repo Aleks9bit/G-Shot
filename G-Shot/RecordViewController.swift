@@ -6,6 +6,7 @@
 import UIKit
 import AVFoundation
 import KRProgressHUD
+import Photos
 
 class RecordViewController: UIViewController {
 
@@ -27,7 +28,7 @@ class RecordViewController: UIViewController {
   }()
 
   let cameraVideoImage: UIImageView = {
-    let image = UIImage(imageLiteralResourceName: "video_on")
+    let image = UIImage(imageLiteralResourceName: "video_off")
     let imageView = UIImageView(image: image)
     imageView.translatesAutoresizingMaskIntoConstraints = false
     imageView.contentMode = .scaleAspectFill
@@ -36,7 +37,7 @@ class RecordViewController: UIViewController {
   }()
 
   let cameraPhotoImage: UIImageView = {
-    let image = UIImage(imageLiteralResourceName: "camera_off")
+    let image = UIImage(imageLiteralResourceName: "camera_on")
     let imageView = UIImageView(image: image)
     imageView.translatesAutoresizingMaskIntoConstraints = false
     imageView.contentMode = .scaleAspectFill
@@ -45,7 +46,7 @@ class RecordViewController: UIViewController {
   }()
 
   let selectorButton: UIButton = {
-    let image = UIImage(imageLiteralResourceName: "selector_video")
+    let image = UIImage(imageLiteralResourceName: "selector_photo")
     let button = UIButton(type: .system)
     button.setBackgroundImage(image, for: .normal)
     button.translatesAutoresizingMaskIntoConstraints = false
@@ -91,12 +92,14 @@ class RecordViewController: UIViewController {
   let recordVideoButton: UIButton = {
     let videoOff = UIImage(imageLiteralResourceName: "videoOff")
     let videoOn = UIImage(imageLiteralResourceName: "videoActive")
-    let button = UIButton(type: .system)
+    let button = UIButton(type: .custom)
     button.translatesAutoresizingMaskIntoConstraints = false
+    button.adjustsImageWhenHighlighted = false
     button.setBackgroundImage(videoOff, for: .normal)
     button.setBackgroundImage(videoOn, for: .selected)
     button.addTarget(self, action: #selector(recordVideo), for: .touchUpInside)
     button.isEnabled = false
+    button.isHidden = true
 
     return button
   }()
@@ -108,7 +111,6 @@ class RecordViewController: UIViewController {
     button.translatesAutoresizingMaskIntoConstraints = false
     button.setBackgroundImage(cameraOff, for: .normal)
     button.setBackgroundImage(cameraOn, for: .selected)
-    button.isHidden = true
     button.isEnabled = false
     button.addTarget(self, action: #selector(shotPhoto), for: .touchUpInside)
 
@@ -165,6 +167,16 @@ class RecordViewController: UIViewController {
     return preview!
   }()
 
+  let homeButton: UIButton = {
+    let image = UIImage(imageLiteralResourceName: "home")
+    let button = UIButton(type: .system)
+    button.translatesAutoresizingMaskIntoConstraints = false
+    button.setBackgroundImage(image, for: .normal)
+    button.addTarget(self, action: #selector(handleBackHome), for: .touchUpInside)
+
+    return button
+  }()
+
   var assetExport: AVAssetExportSession?
 
   enum SessionPreset {
@@ -210,7 +222,7 @@ class RecordViewController: UIViewController {
   var watermarks: [URL] = []
   var watermarkCount = 0
   var cameraPosition: AVCaptureDevicePosition = .back
-  var cameraType: SessionPreset = .video {
+  var cameraType: SessionPreset = .photo {
     didSet {
       var videoImage: UIImage!
       var photoImage: UIImage!
@@ -241,6 +253,8 @@ class RecordViewController: UIViewController {
     }
   }
 
+  let imagePiker = UIImagePickerController()
+
   var movieFileOutput = AVCaptureMovieFileOutput()
   var imageFileOutput: AVCaptureStillImageOutput = {
     let output = AVCaptureStillImageOutput()
@@ -258,14 +272,21 @@ class RecordViewController: UIViewController {
   override func viewDidAppear(_ animated: Bool) {
     super.viewDidAppear(animated)
 
-    checkIfUserIsLoggedIn()
-    refreshWatermarks()
-    setupCameraSession()
-    startCameraSession()
+    navigationController?.navigationBar.isHidden = true
+    
+      refreshWatermarks()
+      setupCameraSession()
+      startCameraSession()
   }
 
-  override func viewWillDisappear(_ animated: Bool) {
-    super.viewWillDisappear(animated)
+  override func viewWillAppear(_ animated: Bool) {
+    super.viewWillAppear(animated)
+  }
+
+  override func viewDidDisappear(_ animated: Bool) {
+    super.viewDidDisappear(animated)
+
+
     stopCameraSession()
   }
 
@@ -278,10 +299,10 @@ class RecordViewController: UIViewController {
         }
         let imageData = AVCaptureStillImageOutput.jpegStillImageNSDataRepresentation(buffer)
         if let image = UIImage(data: (imageData)!) {
+          KRProgressHUD.show()
+          self.save(image: image)
           self.exportImageWithWatermark(image)
         }
-
-        print("complite")
       })
     }
   }
@@ -306,15 +327,28 @@ class RecordViewController: UIViewController {
 
   func exportImageWithWatermark(_ image: UIImage) {
 
-    let scale = image.size.width / UIScreen.main.bounds.width
+    UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
+
+    let scale: CGFloat// = max(image.size.width, image.size.height) / UIScreen.main.bounds.width
+
+    if image.size.width < image.size.height {
+      scale = previewLayer.frame.width / image.size.width
+    } else {
+      scale = previewLayer.frame.width / image.size.height
+    }
+
+    let width = min(image.size.width, image.size.height)
+
+    var imageRef = image.cgImage?.cropping(to: CGRect(x: 0, y: 0, width: width, height: width))
+
     let offsetX = previewLayer.frame.origin.x * scale
     let offsetY = previewLayer.frame.origin.y * scale
-    let offsetWidth = previewLayer.frame.size.width * scale
-    let offsetHeight = previewLayer.frame.size.height * scale
+    let offsetWidth = width - offsetX
+    let offsetHeight = width - offsetY
 
     let rect = CGRect(x: offsetX, y: offsetY, width: offsetWidth, height: offsetHeight)
 
-    let imageRef = image.cgImage?.cropping(to: rect)
+    imageRef = image.cgImage?.cropping(to: rect)
     let img = UIImage(cgImage: imageRef!, scale: image.scale, orientation: image.imageOrientation)
     guard let watermark = watermarkImage.image else {
       return
@@ -324,7 +358,7 @@ class RecordViewController: UIViewController {
 
     let blockOperation = BlockOperation {
       UIGraphicsBeginImageContext(CGSize(width: offsetWidth, height: offsetHeight))
-      image.draw(in: CGRect(x: 0, y: 0, width: img.size.width, height: img.size.height))
+      img.draw(in: CGRect(x: 0, y: 0, width: img.size.width, height: img.size.height))
       watermark.draw(in: CGRect(x: 0, y: 0, width: img.size.width, height: img.size.height))
 
       newImage = UIGraphicsGetImageFromCurrentImageContext()
@@ -333,45 +367,55 @@ class RecordViewController: UIViewController {
 
     blockOperation.completionBlock = {
 
-      let imagePath = URL(string:"file:/" + NSTemporaryDirectory() + self.fileName("png"))
-      do {
-        try UIImagePNGRepresentation(newImage!)?.write(to: imagePath!)
-      } catch {
-        print(error.localizedDescription)
-      }
+      self.save(image: newImage)
       DispatchQueue.main.async {
         KRProgressHUD.dismiss()
-        self.share(file: imagePath!)
       }
     }
     OperationQueue.main.addOperation(blockOperation)
   }
 
   func exportVideoWithWatermark(to fileURL: URL, rotate: Bool) {
+    if !KRProgressHUD.isVisible {
+      KRProgressHUD.show()
+    }
     let asset = AVURLAsset(url: fileURL, options: nil)
     let videoComposition = AVMutableVideoComposition()
 
     let clipVideoTrack = asset.tracks(withMediaType: AVMediaTypeVideo).first!
 
-    videoComposition.renderSize = CGSize(width: clipVideoTrack.naturalSize.height, height: clipVideoTrack.naturalSize.height)
-    videoComposition.frameDuration = CMTimeMake(1, 30)
+    let originalSize = clipVideoTrack.naturalSize
 
-    let instruction = AVMutableVideoCompositionInstruction()
-    instruction.timeRange = CMTimeRangeMake(kCMTimeZero, asset.duration)
+    var scale: CGFloat
 
-    let transformer = AVMutableVideoCompositionLayerInstruction(assetTrack: clipVideoTrack)
-
-    if rotate {
-      let t1 = CGAffineTransform(translationX: clipVideoTrack.naturalSize.height, y: 0)
-      let t2 = t1.rotated(by: .pi/2)
-
-      let finalTransform = t2
-
-      transformer.setTransform(finalTransform, at: kCMTimeZero)
+    if originalSize.width < originalSize.height {
+      scale = previewLayer.frame.size.width / originalSize.width
+    } else {
+      scale = previewLayer.frame.size.width / originalSize.height
     }
 
-    let size = CGSize(width: clipVideoTrack.naturalSize.height, height: clipVideoTrack.naturalSize.height)
+    let scaledSize = CGSize(width: originalSize.width * scale, height: originalSize.height * scale)
+    let topLeft = CGPoint(x: previewLayer.frame.width * 0.5 - scaledSize.width * 0.5, y: previewLayer.frame.height * 0.5 - scaledSize.height * 0.5)
 
+    var orientationTransform = clipVideoTrack.preferredTransform
+
+    if orientationTransform.tx == originalSize.width || orientationTransform.tx == originalSize.height {
+      orientationTransform.tx = previewLayer.frame.width
+    }
+    if orientationTransform.ty == originalSize.width || orientationTransform.ty == originalSize.height {
+      orientationTransform.ty = previewLayer.frame.height
+    }
+
+    let transform = CGAffineTransform(scaleX: scale, y: scale)
+      .concatenating(CGAffineTransform(translationX: topLeft.x, y: topLeft.y))
+      .concatenating(orientationTransform)
+
+    let layerInstruction = AVMutableVideoCompositionLayerInstruction(assetTrack: clipVideoTrack)
+    layerInstruction.setTransform(transform, at: kCMTimeZero)
+
+    let instruction = AVMutableVideoCompositionInstruction()
+
+    let size = previewLayer.frame.size
     guard let watermark = watermarkImage.image else {
       return
     }
@@ -390,7 +434,13 @@ class RecordViewController: UIViewController {
 
     videoComposition.animationTool = AVVideoCompositionCoreAnimationTool(postProcessingAsVideoLayer: videoLayer, in: parentLayer)
 
-    instruction.layerInstructions = [transformer]
+    instruction.layerInstructions = [layerInstruction]
+    instruction.timeRange = CMTimeRangeMake(kCMTimeZero, asset.duration)
+
+    videoComposition.renderSize = CGSize(width: previewLayer.frame.width, height: previewLayer.frame.width)
+    videoComposition.renderScale = 1.0
+    videoComposition.frameDuration = CMTimeMake(1, 30)
+
     videoComposition.instructions = [instruction]
 
     let filePath = NSTemporaryDirectory() + fileName("mov")
@@ -404,12 +454,68 @@ class RecordViewController: UIViewController {
     assetExport.exportAsynchronously {
       switch assetExport.status {
       case .completed:
+
+        self.saveVideo(by: movieURL)
+
         DispatchQueue.main.async {
           KRProgressHUD.dismiss()
-          self.share(file: movieURL)
         }
         break
-      default: break
+      default:
+        DispatchQueue.main.async {
+          KRProgressHUD.dismiss()
+        }
+        break
+      }
+    }
+  }
+
+  func save(image: UIImage) {
+    PHPhotoLibrary.shared().performChanges({ 
+      let assetRequest = PHAssetChangeRequest.creationRequestForAsset(from: image)
+      self.getAlbum { (album) in
+        if let album = album, let assetPlaceholder = assetRequest.placeholderForCreatedAsset {
+          let albumChangeRequest = PHAssetCollectionChangeRequest(for: album)
+          let assetPlaceholders: NSArray = [assetPlaceholder]
+
+          albumChangeRequest?.addAssets(assetPlaceholders)
+        }
+      }
+    }, completionHandler: nil)
+  }
+
+  func saveVideo(by path: URL) {
+    PHPhotoLibrary.shared().performChanges({ 
+      let assetRequest = PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: path)
+      self.getAlbum { (album) in
+        if let album = album, let assetPlaceholder = assetRequest?.placeholderForCreatedAsset {
+          let albumChangeRequest = PHAssetCollectionChangeRequest(for: album)
+          let assetPlaceholders: NSArray = [assetPlaceholder]
+
+          albumChangeRequest?.addAssets(assetPlaceholders)
+        }
+      }
+    }, completionHandler: nil)
+  }
+
+  func getAlbum(complition: @escaping (_ album: PHAssetCollection?) -> Void) {
+    let options = PHFetchOptions()
+    options.predicate = NSPredicate(format: "title=%@", "Green Book")
+    let collection = PHAssetCollection.fetchAssetCollections(with: .album, subtype: .any, options: options)
+    if let album = collection.firstObject {
+      complition(album)
+      return
+    }
+    var placeholder: PHObjectPlaceholder?
+    PHPhotoLibrary.shared().performChanges({ 
+      let request = PHAssetCollectionChangeRequest.creationRequestForAssetCollection(withTitle: "Green Book")
+      placeholder = request.placeholderForCreatedAssetCollection
+    }) { (success, error) in
+      if success, let id = placeholder?.localIdentifier {
+        let fetchResult = PHAssetCollection.fetchAssetCollections(withLocalIdentifiers: [id], options: nil)
+        if let album = fetchResult.firstObject {
+          complition(album)
+        }
       }
     }
   }
@@ -450,8 +556,8 @@ class RecordViewController: UIViewController {
       if self.captureSession.canAddInput(audioDeviceInput) {
         self.captureSession.addInput(audioDeviceInput)
       }
-      if self.captureSession.canAddOutput(self.movieFileOutput) {
-        self.captureSession.addOutput(self.movieFileOutput)
+      if self.captureSession.canAddOutput(self.imageFileOutput) {
+        self.captureSession.addOutput(self.imageFileOutput)
       }
     }
   }
@@ -484,88 +590,116 @@ class RecordViewController: UIViewController {
   }
 
   func stopCameraSession() {
-    previewLayer.removeFromSuperlayer()
-    captureSession.stopRunning()
+    DispatchQueue.global().async {
+      self.previewLayer.removeFromSuperlayer()
+      self.captureSession.stopRunning()
+    }
   }
 
   func getMediaFromGallery() {
-    let picker = UIImagePickerController()
-    picker.allowsEditing = false
-    picker.sourceType = .photoLibrary
-    picker.mediaTypes = UIImagePickerController.availableMediaTypes(for: .photoLibrary)!
-    picker.delegate = self
-    present(picker, animated: true, completion: nil)
+    getAlbum { (album) in
+      if let album = album {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let library = storyboard.instantiateViewController(withIdentifier: "photo") as! LibraryCollectionViewController
+        library.album = album
+        DispatchQueue.main.async {
+          self.navigationController?.pushViewController(library, animated: true)
+        }
+      }
+    }
   }
 
   func switchCameraType() {
-    cameraType = cameraType == .video ? .photo : .video
+    KRProgressHUD.show()
 
-    captureSession.beginConfiguration()
+    let blockOperation = BlockOperation {
+      self.cameraType = self.cameraType == .video ? .photo : .video
 
-    captureSession.sessionPreset = cameraType == .video ? AVCaptureSessionPresetHigh : AVCaptureSessionPresetPhoto
+      self.captureSession.beginConfiguration()
 
-    for connection in captureSession.outputs {
-      let output = connection as! AVCaptureOutput
-      captureSession.removeOutput(output)
-    }
-    switch cameraType {
-    case .video:
-      if captureSession.canAddOutput(movieFileOutput) {
-        captureSession.addOutput(movieFileOutput)
+      self.captureSession.sessionPreset = self.cameraType == .video ? AVCaptureSessionPresetHigh : AVCaptureSessionPresetPhoto
+
+      for connection in self.captureSession.outputs {
+        let output = connection as! AVCaptureOutput
+        self.captureSession.removeOutput(output)
       }
-      break
-    case .photo:
-      if captureSession.canAddOutput(imageFileOutput) {
-        captureSession.addOutput(imageFileOutput)
+      switch self.cameraType {
+      case .video:
+        if self.captureSession.canAddOutput(self.movieFileOutput) {
+          self.captureSession.addOutput(self.movieFileOutput)
+        }
+        break
+      case .photo:
+        if self.captureSession.canAddOutput(self.imageFileOutput) {
+          self.captureSession.addOutput(self.imageFileOutput)
+        }
+        break
       }
-      break
+      self.captureSession.commitConfiguration()
     }
-    captureSession.commitConfiguration()
+
+    blockOperation.completionBlock = {
+      DispatchQueue.main.async {
+        KRProgressHUD.dismiss()
+      }
+    }
+
+    OperationQueue().addOperation(blockOperation)
   }
 
   func switchCameraInput() {
+    KRProgressHUD.show()
+
     var image: UIImage!
-    switch cameraPosition {
-    case .back:
-      cameraPosition = .front
-      image = UIImage(imageLiteralResourceName: "change_camera_front")
-      break
-    case .front:
-      cameraPosition = .back
-      image = UIImage(imageLiteralResourceName: "change_camera_back")
-      break
-    default: break
+    let blockOperation = BlockOperation {
+      switch self.cameraPosition {
+      case .back:
+        self.cameraPosition = .front
+        image = UIImage(imageLiteralResourceName: "change_camera_front")
+        break
+      case .front:
+        self.cameraPosition = .back
+        image = UIImage(imageLiteralResourceName: "change_camera_back")
+        break
+      default: break
+      }
+
+      self.captureSession.beginConfiguration()
+
+      var existingConnection: AVCaptureDeviceInput!
+
+      for connection in self.captureSession.inputs {
+        let input = connection as! AVCaptureDeviceInput
+        if input.device.hasMediaType(AVMediaTypeVideo) {
+          existingConnection = input
+        }
+      }
+
+      self.captureSession.removeInput(existingConnection)
+
+      if let newDevice = self.device(with: self.cameraPosition) {
+        var deviceInput: AVCaptureDeviceInput!
+        do {
+          deviceInput = try AVCaptureDeviceInput(device: newDevice)
+        } catch {
+          print(error.localizedDescription)
+        }
+        if self.captureSession.canAddInput(deviceInput) {
+          self.captureSession.addInput(deviceInput)
+        }
+      }
+      self.captureSession.commitConfiguration()
     }
 
-    DispatchQueue.main.async {
-      self.switchCameraButton.setBackgroundImage(image, for: .normal)
-    }
+    blockOperation.completionBlock = {
 
-    captureSession.beginConfiguration()
-
-    var existingConnection: AVCaptureDeviceInput!
-
-    for connection in captureSession.inputs {
-      let input = connection as! AVCaptureDeviceInput
-      if input.device.hasMediaType(AVMediaTypeVideo) {
-        existingConnection = input
+      DispatchQueue.main.async {
+        KRProgressHUD.dismiss()
+        self.switchCameraButton.setBackgroundImage(image, for: .normal)
       }
     }
 
-    captureSession.removeInput(existingConnection)
-
-    if let newDevice = device(with: cameraPosition) {
-      var deviceInput: AVCaptureDeviceInput!
-      do {
-        deviceInput = try AVCaptureDeviceInput(device: newDevice)
-      } catch {
-        print(error.localizedDescription)
-      }
-      if captureSession.canAddInput(deviceInput) {
-        captureSession.addInput(deviceInput)
-      }
-    }
-    captureSession.commitConfiguration()
+    OperationQueue().addOperation(blockOperation)
   }
 
   func refreshWatermarks() {
@@ -658,6 +792,8 @@ class RecordViewController: UIViewController {
 
   private func setupViews() {
 
+    KRProgressHUD.set(style: .black)
+
     view.backgroundColor = mainColor
 
     view.addSubview(surfaceConteinerView)
@@ -676,6 +812,7 @@ class RecordViewController: UIViewController {
     view.addSubview(shotPhotoButton)
     view.addSubview(prevWatermarkButton)
     view.addSubview(nextWatermarkButton)
+    view.addSubview(homeButton)
 
     cameraVideoImage.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -10).isActive = true
     cameraVideoImage.leftAnchor.constraint(equalTo: view.leftAnchor, constant: view.bounds.width * 0.02).isActive = true
@@ -730,19 +867,12 @@ class RecordViewController: UIViewController {
     previewLayer.bounds = watermarkImage.bounds
     previewLayer.position = CGPoint(x: watermarkImage.bounds.midX, y: watermarkImage.bounds.midY)
 
+    homeButton.topAnchor.constraint(equalTo: view.topAnchor, constant: 5).isActive = true
+    homeButton.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 5).isActive = true
+    homeButton.heightAnchor.constraint(equalToConstant: 30).isActive = true
+    homeButton.widthAnchor.constraint(equalToConstant: 30).isActive = true
+
     watermarkImage.layer.addSublayer(previewLayer)
-  }
-
-  func checkIfUserIsLoggedIn() {
-    let userDefaults = UserDefaults.standard
-    if !userDefaults.bool(forKey: "login") {
-      login()
-    }
-  }
-
-  func login() {
-    let loginVC = LoginViewController()
-    present(loginVC, animated: true)
   }
 
   override var prefersStatusBarHidden: Bool {
@@ -753,35 +883,29 @@ class RecordViewController: UIViewController {
     let activityVC = UIActivityViewController(activityItems: [file], applicationActivities: [])
     self.present(activityVC, animated: true)
   }
+
+  func handleBackHome() {
+    DispatchQueue.main.async {
+      self.navigationController?.popToRootViewController(animated: true)
+    }
+  }
 }
 
 extension RecordViewController: AVCaptureFileOutputRecordingDelegate {
   func capture(_ captureOutput: AVCaptureFileOutput!, didFinishRecordingToOutputFileAt outputFileURL: URL!, fromConnections connections: [Any]!, error: Error!) {
 
-    print("Finished recording: \(outputFileURL)")
+    saveVideo(by: outputFileURL)
 
     exportVideoWithWatermark(to: outputFileURL, rotate: true)
   }
 }
 
 extension RecordViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
-  func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
-    guard let mediaType = info[UIImagePickerControllerMediaType] as? String else {
-      dismiss(animated: true, completion: nil)
-      return
-    }
-    KRProgressHUD.show()
-    if mediaType == "public.image" {
-      print("Image")
-      let image = info[UIImagePickerControllerOriginalImage] as! UIImage
-      self.exportImageWithWatermark(image)
-    } else {
-      print("Video")
-      let mediaURL = info[UIImagePickerControllerReferenceURL] as! URL
-      self.exportVideoWithWatermark(to: mediaURL, rotate: false)
 
-    }
+  func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
+
     dismiss(animated: true, completion: nil)
+    share(file: info[UIImagePickerControllerReferenceURL] as! URL)
   }
   func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
     dismiss(animated: true, completion: nil)

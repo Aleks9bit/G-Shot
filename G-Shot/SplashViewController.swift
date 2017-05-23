@@ -79,7 +79,7 @@ class SplashViewController: UIViewController {
     let button = UIButton(type: .system)
     button.translatesAutoresizingMaskIntoConstraints = false
     button.setBackgroundImage(image, for: .normal)
-    button.addTarget(self, action: #selector(handleLogin), for: .touchUpInside)
+    button.addTarget(self, action: #selector(handleOpenMyCard), for: .touchUpInside)
 
     return button
   }()
@@ -98,8 +98,19 @@ class SplashViewController: UIViewController {
   let titleLabel: UILabel = {
     let label = UILabel()
     label.translatesAutoresizingMaskIntoConstraints = false
-    label.text = "Green Shot"
+    label.text = "Green Book"
     label.font = .boldSystemFont(ofSize: 56)
+    label.textColor = secondColor
+    label.textAlignment = .center
+
+    return label
+  }()
+
+  let descriptionLabel: UILabel = {
+    let label = UILabel()
+    label.translatesAutoresizingMaskIntoConstraints = false
+    label.text = "Digital Card"
+    label.font = .systemFont(ofSize: 22)
     label.textColor = secondColor
     label.textAlignment = .center
 
@@ -137,14 +148,34 @@ class SplashViewController: UIViewController {
     return button
   }()
 
+  var safariViewController: SafariViewController?
+
   override func viewDidLoad() {
     super.viewDidLoad()
 
     setupViews()
   }
 
+  override func viewDidAppear(_ animated: Bool) {
+    super.viewWillAppear(animated)
+    navigationController?.navigationBar.isHidden = true
+
+  }
+
+  override func viewDidDisappear(_ animated: Bool) {
+    safariViewController = nil
+  }
+
   func handleOpenGShot() {
-    checkIfUserIsLoggedIn()
+    let userDefault = UserDefaults.standard
+    if !userDefault.bool(forKey: "login") {
+      let loginVC = LoginViewController()
+      loginVC.run = true
+      navigationController?.pushViewController(loginVC, animated: true)
+    } else {
+      let recordVC = RecordViewController()
+      navigationController?.pushViewController(recordVC, animated: true)
+    }
   }
 
   func handleOpenInvitation() {
@@ -159,15 +190,22 @@ class SplashViewController: UIViewController {
     }
   }
 
-  func handleLogin() {
+  func handleOpenMyCard() {
     let userDefault = UserDefaults.standard
-    if !userDefault.bool(forKey: "login") {
+    if !(userDefault.dictionary(forKey: "myCard") != nil) {
       let loginVC = LoginViewController()
-      present(loginVC, animated: true)
+      loginVC.openUrl = true
+      navigationController?.pushViewController(loginVC, animated: true)
     } else {
-      let keychainWrapper = KeychainWrapper()
-      let firstValue = keychainWrapper.find(itemKey: "login")!
-      let secondValue = keychainWrapper.find(itemKey: "pass")!
+      myCard()
+    }
+  }
+
+  func myCard() {
+    let userDefault = UserDefaults.standard
+    if let dict = userDefault.dictionary(forKey: "myCard") as? [String: String],
+      let firstValue = dict["cardNumber"],
+      let secondValue = dict["pass"] {
 
       let urlString = "http://www.greenbook.co.il/card/\(firstValue)/\(secondValue)"
       if let url = URL(string: urlString) {
@@ -189,29 +227,15 @@ class SplashViewController: UIViewController {
   }
 
   func open(url: URL) {
-    let safariVC = SFSafariViewController(url: url, entersReaderIfAvailable: false)
-
-    if #available(iOS 10.0, *) {
-      safariVC.preferredBarTintColor = secondColor
-    } else {
-      // Fallback on earlier versions
-    }
-    present(safariVC, animated: true)
-  }
-
-  func checkIfUserIsLoggedIn() {
-    let userDefaults = UserDefaults.standard
-    if !userDefaults.bool(forKey: "login") {
-      login()
-    } else {
-      let recordVC = RecordViewController()
-      present(recordVC, animated: true)
+    safariViewController = SafariViewController(url: url)
+    safariViewController?.delegate = self
+    DispatchQueue.main.async {
+      self.navigationController?.pushViewController(self.safariViewController!, animated: true)
     }
   }
 
-  func login() {
-    let recordVC = RecordViewController()
-    present(recordVC, animated: true)
+  override var prefersStatusBarHidden: Bool {
+    return true
   }
 
   func setupViews() {
@@ -229,6 +253,7 @@ class SplashViewController: UIViewController {
     view.addSubview(myCardLabel)
     view.addSubview(myCardButton)
 
+    view.addSubview(descriptionLabel)
     view.addSubview(titleLabel)
 
     view.addSubview(supportButton)
@@ -241,7 +266,7 @@ class SplashViewController: UIViewController {
     gShotButton.heightAnchor.constraint(equalToConstant: 80).isActive = true
     gShotButton.widthAnchor.constraint(equalToConstant: 80).isActive = true
 
-    gShotLabel.topAnchor.constraint(equalTo: gShotButton.bottomAnchor, constant: 10).isActive = true
+    gShotLabel.topAnchor.constraint(equalTo: gShotButton.bottomAnchor, constant: 5).isActive = true
     gShotLabel.centerXAnchor.constraint(equalTo: gShotButton.centerXAnchor).isActive = true
 
     invitationButton.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
@@ -249,39 +274,51 @@ class SplashViewController: UIViewController {
     invitationButton.heightAnchor.constraint(equalToConstant: 80).isActive = true
     invitationButton.widthAnchor.constraint(equalToConstant: 80).isActive = true
 
-    invitationLabel.topAnchor.constraint(equalTo: invitationButton.bottomAnchor, constant: 10).isActive = true
+    invitationLabel.topAnchor.constraint(equalTo: invitationButton.bottomAnchor, constant: 5).isActive = true
     invitationLabel.centerXAnchor.constraint(equalTo: invitationButton.centerXAnchor).isActive = true
 
-    searchLabel.bottomAnchor.constraint(equalTo: gShotButton.topAnchor, constant: -20).isActive = true
+    searchLabel.bottomAnchor.constraint(equalTo: gShotButton.topAnchor, constant: -10).isActive = true
     searchLabel.centerXAnchor.constraint(equalTo: gShotButton.centerXAnchor).isActive = true
 
-    searchButton.bottomAnchor.constraint(equalTo: searchLabel.topAnchor, constant: -10).isActive = true
+    searchButton.bottomAnchor.constraint(equalTo: searchLabel.topAnchor, constant: -5).isActive = true
     searchButton.centerXAnchor.constraint(equalTo: searchLabel.centerXAnchor).isActive = true
     searchButton.heightAnchor.constraint(equalToConstant: 80).isActive = true
     searchButton.widthAnchor.constraint(equalToConstant: 80).isActive = true
 
-    myCardLabel.bottomAnchor.constraint(equalTo: invitationButton.topAnchor, constant: -20).isActive = true
+    myCardLabel.bottomAnchor.constraint(equalTo: invitationButton.topAnchor, constant: -10).isActive = true
     myCardLabel.centerXAnchor.constraint(equalTo: invitationButton.centerXAnchor).isActive = true
 
-    myCardButton.bottomAnchor.constraint(equalTo: myCardLabel.topAnchor, constant: -10).isActive = true
+    myCardButton.bottomAnchor.constraint(equalTo: myCardLabel.topAnchor, constant: -5).isActive = true
     myCardButton.centerXAnchor.constraint(equalTo: myCardLabel.centerXAnchor).isActive = true
     myCardButton.heightAnchor.constraint(equalToConstant: 80).isActive = true
     myCardButton.widthAnchor.constraint(equalToConstant: 80).isActive = true
 
-    titleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-    titleLabel.bottomAnchor.constraint(equalTo: myCardButton.topAnchor, constant: -20).isActive = true
+    descriptionLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+    descriptionLabel.bottomAnchor.constraint(equalTo: myCardButton.topAnchor, constant: -10).isActive = true
 
-    supportButton.topAnchor.constraint(equalTo: invitationLabel.bottomAnchor, constant: 20).isActive = true
+    titleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+    titleLabel.bottomAnchor.constraint(equalTo: descriptionLabel.topAnchor, constant: -5).isActive = true
+
+    supportButton.topAnchor.constraint(equalTo: invitationLabel.bottomAnchor, constant: 10).isActive = true
     supportButton.centerXAnchor.constraint(equalTo: invitationLabel.centerXAnchor).isActive = true
     supportButton.heightAnchor.constraint(equalToConstant: 80).isActive = true
     supportButton.widthAnchor.constraint(equalToConstant: 80).isActive = true
 
-    supportLabel.topAnchor.constraint(equalTo: supportButton.bottomAnchor, constant: 10).isActive = true
+    supportLabel.topAnchor.constraint(equalTo: supportButton.bottomAnchor, constant: 5).isActive = true
     supportLabel.centerXAnchor.constraint(equalTo: supportButton.centerXAnchor).isActive = true
 
-    newCardButton.topAnchor.constraint(equalTo: supportLabel.bottomAnchor, constant: 20).isActive = true
+    newCardButton.topAnchor.constraint(equalTo: supportLabel.bottomAnchor, constant: 10).isActive = true
     newCardButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
     newCardButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
+
+
   }
 
+}
+
+extension SplashViewController: SFSafariViewControllerDelegate {
+  func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
+    self.navigationController?.popToRootViewController(animated: true)
+    controller.view.removeFromSuperview()
+  }
 }

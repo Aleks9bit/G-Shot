@@ -7,6 +7,7 @@
 */
 
 username = "מספר גלריה";
+cardNumber = "מספר כרטיס";
 password = "מספר אבטחה";
 error = "רישום לא הצליח";
 picture_title = "GreenShot-Image";

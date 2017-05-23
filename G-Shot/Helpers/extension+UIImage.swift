@@ -12,6 +12,7 @@ import KRProgressHUD
 extension UIImageView {
 
   func donwnload(from url: URL) {
+    KRProgressHUD.show()
     URLSession.shared.dataTask(with: url) { (data, response, error) in
       guard let httpURLResponse = response as? HTTPURLResponse,
         httpURLResponse.statusCode == 200,

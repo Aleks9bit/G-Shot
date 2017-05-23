@@ -9,7 +9,7 @@ class KeychainWrapper {
     // Supply an optional Keychain access group to access shared Keychain items.
     var accessGroup: String? {
         let accessGroup = Bundle.main.bundleIdentifier
-        let appIdPrefix = "LT3MAR5838" //Bundle.main.object(forInfoDictionaryKey: "AppIdentifierPrefix")
+        let appIdPrefix = "F5KP4MVHNE"
 
         return appIdPrefix + "." + accessGroup!
     }
