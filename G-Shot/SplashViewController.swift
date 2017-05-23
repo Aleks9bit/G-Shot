@@ -148,8 +148,6 @@ class SplashViewController: UIViewController {
     return button
   }()
 
-  var safariViewController: SafariViewController?
-
   override func viewDidLoad() {
     super.viewDidLoad()
 
@@ -159,11 +157,12 @@ class SplashViewController: UIViewController {
   override func viewDidAppear(_ animated: Bool) {
     super.viewWillAppear(animated)
     navigationController?.navigationBar.isHidden = true
-
   }
 
-  override func viewDidDisappear(_ animated: Bool) {
-    safariViewController = nil
+  override func viewWillAppear(_ animated: Bool) {
+    super.viewWillAppear(animated)
+    navigationController?.isToolbarHidden = true
+
   }
 
   func handleOpenGShot() {
@@ -227,10 +226,10 @@ class SplashViewController: UIViewController {
   }
 
   func open(url: URL) {
-    safariViewController = SafariViewController(url: url)
-    safariViewController?.delegate = self
+    let webView = WebViewViewController()
+    webView.url = url
     DispatchQueue.main.async {
-      self.navigationController?.pushViewController(self.safariViewController!, animated: true)
+      self.navigationController?.pushViewController(webView, animated: true)
     }
   }
 

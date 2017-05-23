@@ -13,10 +13,10 @@
 		3C98AAF6A88A3DD75B949196 /* RecordViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C98A77D7F63A1A1FF7E8589 /* RecordViewController.swift */; };
 		3C98AEE7DFE61C606BC16D60 /* LeftRightPaddedTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C98A8F357AAA3215E96E3AB /* LeftRightPaddedTextField.swift */; };
 		3C98AFE0CF7818E20DA4E5AB /* NetworkLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C98A9DFD0AFDBBFD25FB570 /* NetworkLayer.swift */; };
-		AC6F85541ED315AB00088B61 /* SafariViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC6F85531ED315AB00088B61 /* SafariViewController.swift */; };
 		AC7492721ED17D5400D82EEC /* LibraryCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC7492711ED17D5400D82EEC /* LibraryCollectionViewController.swift */; };
 		AC7492741ED1FE5E00D82EEC /* VideoPlayerAVViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC7492731ED1FE5E00D82EEC /* VideoPlayerAVViewController.swift */; };
 		AC7492761ED2007300D82EEC /* PhotoPreviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC7492751ED2007300D82EEC /* PhotoPreviewViewController.swift */; };
+		AC7BFED21ED4877C00616237 /* WebViewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC7BFED11ED4877C00616237 /* WebViewViewController.swift */; };
 		AC82D8791ECD9F6C007E7BC0 /* Extension+UIImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC82D8781ECD9F6C007E7BC0 /* Extension+UIImageView.swift */; };
 		AC86040B1EBD9B93009ECA54 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC86040A1EBD9B93009ECA54 /* Constants.swift */; };
 		AC8604151EBDA0FA009ECA54 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = AC8604171EBDA0FA009ECA54 /* Localizable.strings */; };
@@ -38,10 +38,10 @@
 		3C98AD5BBA43865FFFE49255 /* KeychainWrapper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeychainWrapper.swift; sourceTree = "<group>"; };
 		57A71C936B467E42CA415EFB /* Pods-G-Shot.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-G-Shot.debug.xcconfig"; path = "Pods/Target Support Files/Pods-G-Shot/Pods-G-Shot.debug.xcconfig"; sourceTree = "<group>"; };
 		87642E5463662F0222602B12 /* Pods_G_Shot.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_G_Shot.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		AC6F85531ED315AB00088B61 /* SafariViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SafariViewController.swift; sourceTree = "<group>"; };
 		AC7492711ED17D5400D82EEC /* LibraryCollectionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LibraryCollectionViewController.swift; sourceTree = "<group>"; };
 		AC7492731ED1FE5E00D82EEC /* VideoPlayerAVViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoPlayerAVViewController.swift; sourceTree = "<group>"; };
 		AC7492751ED2007300D82EEC /* PhotoPreviewViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoPreviewViewController.swift; sourceTree = "<group>"; };
+		AC7BFED11ED4877C00616237 /* WebViewViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WebViewViewController.swift; sourceTree = "<group>"; };
 		AC82D8781ECD9F6C007E7BC0 /* Extension+UIImageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Extension+UIImageView.swift"; sourceTree = "<group>"; };
 		AC86040A1EBD9B93009ECA54 /* Constants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		AC8604161EBDA0FA009ECA54 /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = Base; path = Base.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -116,7 +116,7 @@
 				AC7492711ED17D5400D82EEC /* LibraryCollectionViewController.swift */,
 				AC7492731ED1FE5E00D82EEC /* VideoPlayerAVViewController.swift */,
 				AC7492751ED2007300D82EEC /* PhotoPreviewViewController.swift */,
-				AC6F85531ED315AB00088B61 /* SafariViewController.swift */,
+				AC7BFED11ED4877C00616237 /* WebViewViewController.swift */,
 			);
 			name = Controller;
 			sourceTree = "<group>";
@@ -299,9 +299,9 @@
 				3C98A0B2DE64EF286FE71F74 /* LoginViewController.swift in Sources */,
 				AC7492721ED17D5400D82EEC /* LibraryCollectionViewController.swift in Sources */,
 				3C98AEE7DFE61C606BC16D60 /* LeftRightPaddedTextField.swift in Sources */,
+				AC7BFED21ED4877C00616237 /* WebViewViewController.swift in Sources */,
 				AC7492741ED1FE5E00D82EEC /* VideoPlayerAVViewController.swift in Sources */,
 				AC7492761ED2007300D82EEC /* PhotoPreviewViewController.swift in Sources */,
-				AC6F85541ED315AB00088B61 /* SafariViewController.swift in Sources */,
 				3C98AFE0CF7818E20DA4E5AB /* NetworkLayer.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

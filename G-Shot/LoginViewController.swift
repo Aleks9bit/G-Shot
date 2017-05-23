@@ -240,10 +240,10 @@ class LoginViewController: UIViewController {
           let secondField = loginTextField.text {
           let urlString = "http://www.greenbook.co.il/card/\(firstField)/\(secondField)"
           if let url = URL(string: urlString) {
-            let safariVC = SafariViewController(url: url, entersReaderIfAvailable: false)
-            safariVC.delegate = self
+            let webView = WebViewViewController()
+            webView.url = url
             DispatchQueue.main.async {
-              self.navigationController?.pushViewController(safariVC, animated: true)
+              self.navigationController?.pushViewController(webView, animated: true)
                 DispatchQueue.global().async {
                   let userDefault = UserDefaults.standard
                   let dict = [
