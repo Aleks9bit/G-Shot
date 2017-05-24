@@ -24,8 +24,6 @@ class PhotoPreviewViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-      navigationController?.navigationBar.isHidden = false
-
       view.backgroundColor = .black
       navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(handleShare))
 
@@ -38,6 +36,17 @@ class PhotoPreviewViewController: UIViewController {
 
         // Do any additional setup after loading the view.
     }
+
+  override func viewWillAppear(_ animated: Bool) {
+    super.viewWillAppear(animated)
+    navigationController?.navigationBar.isHidden = false
+
+  }
+
+  override func viewDidAppear(_ animated: Bool) {
+    super.viewDidAppear(animated)
+    navigationController?.hidesBarsOnSwipe = false
+  }
 
   func handleShare() {
     let activityVC = UIActivityViewController(activityItems: [image], applicationActivities: [])

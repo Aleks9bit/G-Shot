@@ -42,11 +42,10 @@
 		AC7492731ED1FE5E00D82EEC /* VideoPlayerAVViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoPlayerAVViewController.swift; sourceTree = "<group>"; };
 		AC7492751ED2007300D82EEC /* PhotoPreviewViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoPreviewViewController.swift; sourceTree = "<group>"; };
 		AC7BFED11ED4877C00616237 /* WebViewViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WebViewViewController.swift; sourceTree = "<group>"; };
+		AC7BFED31ED4BC4400616237 /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = Base; path = Base.lproj/Localizable.strings; sourceTree = "<group>"; };
 		AC82D8781ECD9F6C007E7BC0 /* Extension+UIImageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Extension+UIImageView.swift"; sourceTree = "<group>"; };
 		AC86040A1EBD9B93009ECA54 /* Constants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
-		AC8604161EBDA0FA009ECA54 /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = Base; path = Base.lproj/Localizable.strings; sourceTree = "<group>"; };
 		AC8604181EBDA10D009ECA54 /* he */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = he; path = he.lproj/Localizable.strings; sourceTree = "<group>"; };
-		AC8604191EBDADD0009ECA54 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		ACB4B6631EC43FB10005727D /* extension+UIImage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "extension+UIImage.swift"; sourceTree = "<group>"; };
 		ACB8F66D1EC86A370096FC0F /* SplashViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SplashViewController.swift; sourceTree = "<group>"; };
 		ACDD39251EBCF9CC0052D371 /* G-Shot.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = "G-Shot.app"; path = "G-Book.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -208,7 +207,6 @@
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				Base,
-				en,
 				he,
 			);
 			mainGroup = ACDD391C1EBCF9CC0052D371;
@@ -312,9 +310,8 @@
 		AC8604171EBDA0FA009ECA54 /* Localizable.strings */ = {
 			isa = PBXVariantGroup;
 			children = (
-				AC8604161EBDA0FA009ECA54 /* Base */,
 				AC8604181EBDA10D009ECA54 /* he */,
-				AC8604191EBDADD0009ECA54 /* en */,
+				AC7BFED31ED4BC4400616237 /* Base */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";

@@ -167,16 +167,6 @@ class RecordViewController: UIViewController {
     return preview!
   }()
 
-  let homeButton: UIButton = {
-    let image = UIImage(imageLiteralResourceName: "home")
-    let button = UIButton(type: .system)
-    button.translatesAutoresizingMaskIntoConstraints = false
-    button.setBackgroundImage(image, for: .normal)
-    button.addTarget(self, action: #selector(handleBackHome), for: .touchUpInside)
-
-    return button
-  }()
-
   var assetExport: AVAssetExportSession?
 
   enum SessionPreset {
@@ -272,15 +262,9 @@ class RecordViewController: UIViewController {
   override func viewDidAppear(_ animated: Bool) {
     super.viewDidAppear(animated)
 
-    navigationController?.navigationBar.isHidden = true
-    
       refreshWatermarks()
       setupCameraSession()
       startCameraSession()
-  }
-
-  override func viewWillAppear(_ animated: Bool) {
-    super.viewWillAppear(animated)
   }
 
   override func viewDidDisappear(_ animated: Bool) {
@@ -289,6 +273,12 @@ class RecordViewController: UIViewController {
 
     stopCameraSession()
   }
+
+  override func viewWillAppear(_ animated: Bool) {
+    super.viewWillAppear(animated)
+    navigationController?.hidesBarsOnSwipe = false
+  }
+
 
   func shotPhoto() {
     if let connection = imageFileOutput.connection(withMediaType: AVMediaTypeVideo) {
@@ -394,28 +384,23 @@ class RecordViewController: UIViewController {
       scale = previewLayer.frame.size.width / originalSize.height
     }
 
-    let scaledSize = CGSize(width: originalSize.width * scale, height: originalSize.height * scale)
-    let topLeft = CGPoint(x: previewLayer.frame.width * 0.5 - scaledSize.width * 0.5, y: previewLayer.frame.height * 0.5 - scaledSize.height * 0.5)
+    let scaledSize = originalSize.width * scale
+    let x = (previewLayer.frame.width * 0.5 - scaledSize * 0.5) / scale
 
-    var orientationTransform = clipVideoTrack.preferredTransform
+    var rotateTransform = clipVideoTrack.preferredTransform
+    rotateTransform.c = -1
 
-    if orientationTransform.tx == originalSize.width || orientationTransform.tx == originalSize.height {
-      orientationTransform.tx = previewLayer.frame.width
-    }
-    if orientationTransform.ty == originalSize.width || orientationTransform.ty == originalSize.height {
-      orientationTransform.ty = previewLayer.frame.height
-    }
+    let finalTransform = rotateTransform.translatedBy(x: x, y: 0)
 
-    let transform = CGAffineTransform(scaleX: scale, y: scale)
-      .concatenating(CGAffineTransform(translationX: topLeft.x, y: topLeft.y))
-      .concatenating(orientationTransform)
+    let rotateLayerInstruction = AVMutableVideoCompositionLayerInstruction(assetTrack: clipVideoTrack)
+    rotateLayerInstruction.setTransform(finalTransform, at: kCMTimeZero)
 
-    let layerInstruction = AVMutableVideoCompositionLayerInstruction(assetTrack: clipVideoTrack)
-    layerInstruction.setTransform(transform, at: kCMTimeZero)
+    let cropWidth = min(originalSize.width, originalSize.height)
+    let cropHeight = min(originalSize.width, originalSize.height)
 
     let instruction = AVMutableVideoCompositionInstruction()
 
-    let size = previewLayer.frame.size
+    let size = CGSize(width: cropWidth, height: cropHeight)
     guard let watermark = watermarkImage.image else {
       return
     }
@@ -434,11 +419,12 @@ class RecordViewController: UIViewController {
 
     videoComposition.animationTool = AVVideoCompositionCoreAnimationTool(postProcessingAsVideoLayer: videoLayer, in: parentLayer)
 
-    instruction.layerInstructions = [layerInstruction]
+
+
+    instruction.layerInstructions = [rotateLayerInstruction]
     instruction.timeRange = CMTimeRangeMake(kCMTimeZero, asset.duration)
 
-    videoComposition.renderSize = CGSize(width: previewLayer.frame.width, height: previewLayer.frame.width)
-    videoComposition.renderScale = 1.0
+    videoComposition.renderSize = CGSize(width: cropWidth, height: cropHeight)
     videoComposition.frameDuration = CMTimeMake(1, 30)
 
     videoComposition.instructions = [instruction]
@@ -790,7 +776,19 @@ class RecordViewController: UIViewController {
     watermarkImage.rightAnchor.constraint(equalTo: surfaceConteinerView.rightAnchor, constant: -25).isActive = true
   }
 
+  func setupNavBar() {
+    guard let navBar = self.navigationController?.navigationBar else {
+      return
+    }
+
+    navBar.isHidden = false
+    navBar.setBackgroundImage(UIImage(), for: .default)
+    navBar.shadowImage = UIImage()
+  }
+
   private func setupViews() {
+
+    setupNavBar()
 
     KRProgressHUD.set(style: .black)
 
@@ -812,7 +810,6 @@ class RecordViewController: UIViewController {
     view.addSubview(shotPhotoButton)
     view.addSubview(prevWatermarkButton)
     view.addSubview(nextWatermarkButton)
-    view.addSubview(homeButton)
 
     cameraVideoImage.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -10).isActive = true
     cameraVideoImage.leftAnchor.constraint(equalTo: view.leftAnchor, constant: view.bounds.width * 0.02).isActive = true
@@ -866,11 +863,6 @@ class RecordViewController: UIViewController {
 
     previewLayer.bounds = watermarkImage.bounds
     previewLayer.position = CGPoint(x: watermarkImage.bounds.midX, y: watermarkImage.bounds.midY)
-
-    homeButton.topAnchor.constraint(equalTo: view.topAnchor, constant: 5).isActive = true
-    homeButton.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 5).isActive = true
-    homeButton.heightAnchor.constraint(equalToConstant: 30).isActive = true
-    homeButton.widthAnchor.constraint(equalToConstant: 30).isActive = true
 
     watermarkImage.layer.addSublayer(previewLayer)
   }

@@ -49,12 +49,15 @@ class WebViewViewController: UIViewController {
 
   override func viewWillAppear(_ animated: Bool) {
     super.viewWillAppear(animated)
+
+    navigationController?.hidesBarsOnSwipe = false
     navigationController?.navigationBar.isHidden = false
     navigationController?.isToolbarHidden = false
   }
 
   override func viewDidDisappear(_ animated: Bool) {
     super.viewDidDisappear(animated)
+
     navigationController?.navigationBar.isHidden = true
     navigationController?.isToolbarHidden = true
 

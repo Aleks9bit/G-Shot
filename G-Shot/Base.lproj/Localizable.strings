@@ -6,15 +6,16 @@
   Copyright © 2017 GoTo Inc. All rights reserved.
 */
 
-username = "User Name";
-password = "Password";
-error = "Registration failed";
+username = "מספר גלריה";
+cardNumber = "מספר כרטיס";
+password = "מספר אבטחה";
+error = "רישום לא הצליח";
 picture_title = "GreenShot-Image";
 pictore_description = "Description";
 video_description = "Description";
-downloading_watermarks = "Downloading...";
-saving_images = "Saving Photos...";
-invitation = "Invitations";
-search = "Search";
-myCard = "My Card";
-support = "Support";
+downloading_watermarks = "מוריד גלופות…";
+saving_images = "שומר תמונות…";
+invitation = "הזמנות";
+search = "חיפוש";
+myCard = "כרטיס ביקור שלי";
+support = "תמיכה";

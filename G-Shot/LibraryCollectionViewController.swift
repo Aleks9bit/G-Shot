@@ -25,6 +25,7 @@ class LibraryCollectionViewController: UICollectionViewController, UICollectionV
     override func viewDidLoad() {
         super.viewDidLoad()
 
+      navigationController?.hidesBarsOnSwipe = true
       navigationItem.title = "Green Book"
 
 
@@ -34,20 +35,12 @@ class LibraryCollectionViewController: UICollectionViewController, UICollectionV
         // Do any additional setup after loading the view.
     }
 
-  override func viewDidAppear(_ animated: Bool) {
+  override func viewWillAppear(_ animated: Bool) {
     super.viewWillAppear(animated)
     navigationController?.navigationBar.isHidden = false
+    navigationController?.isToolbarHidden = true
   }
 
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using [segue destinationViewController].
-        // Pass the selected object to the new view controller.
-    }
-    */
 
     // MARK: UICollectionViewDataSource
 
@@ -70,6 +63,7 @@ let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "photo", for:
       let thumbnail = getAssetThumbnail(asset: asset)
       let imageView = UIImageView(frame: CGRect(x: 0, y: 0, width: cell.frame.width, height: cell.frame.height))
       imageView.image = thumbnail
+      imageView.contentMode = .scaleAspectFill
       cell.addSubview(imageView)
       cell.sendSubview(toBack: imageView)
 
