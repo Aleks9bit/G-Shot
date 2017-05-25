@@ -255,6 +255,8 @@ class RecordViewController: UIViewController {
     return output
   }()
 
+  var isRecording = false
+
   override func viewDidLoad() {
     super.viewDidLoad()
 
@@ -308,20 +310,19 @@ class RecordViewController: UIViewController {
   }
 
   func recordVideo() {
-    var isRecording: Bool!
-    if movieFileOutput.isRecording {
+    if isRecording {
+      KRProgressHUD.show()
       movieFileOutput.stopRecording()
       isRecording = false
-      KRProgressHUD.show()
     } else {
       movieFileOutput.connection(withMediaType: AVMediaTypeVideo)
       movieFileOutput.startRecording(toOutputFileURL: URL(fileURLWithPath: videoFileLocation()), recordingDelegate: self)
       isRecording = true
     }
     DispatchQueue.main.async {
-      self.recordVideoButton.isSelected = isRecording
-      self.switchCameraButton.isEnabled = !isRecording
-      self.selectorButton.isEnabled = !isRecording
+      self.recordVideoButton.isSelected = self.isRecording
+      self.switchCameraButton.isEnabled = !self.isRecording
+      self.selectorButton.isEnabled = !self.isRecording
     }
   }
 
