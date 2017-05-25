@@ -609,6 +609,7 @@ class RecordViewController: UIViewController {
     KRProgressHUD.show()
 
     let blockOperation = BlockOperation {
+      self.cameraReady = false
       self.cameraType = self.cameraType == .video ? .photo : .video
 
       self.captureSession.beginConfiguration()
@@ -638,6 +639,7 @@ class RecordViewController: UIViewController {
       DispatchQueue.main.async {
         KRProgressHUD.dismiss()
       }
+      self.cameraReady = true
     }
 
     OperationQueue().addOperation(blockOperation)
