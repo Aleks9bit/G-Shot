@@ -8,6 +8,8 @@
 
 import UIKit
 import SafariServices
+import Crashlytics
+
 
 class SplashViewController: UIViewController {
 

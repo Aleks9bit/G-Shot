@@ -26,6 +26,8 @@
 		ACDD392E1EBCF9CC0052D371 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = ACDD392C1EBCF9CC0052D371 /* Main.storyboard */; };
 		ACDD39331EBCF9CC0052D371 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = ACDD39311EBCF9CC0052D371 /* LaunchScreen.storyboard */; };
 		ACDD393B1EBCFE5E0052D371 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = ACDD393A1EBCFE5E0052D371 /* Assets.xcassets */; };
+		ACE543121ED5E9BF00DEFB2E /* Fabric.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ACE543101ED5E9BF00DEFB2E /* Fabric.framework */; };
+		ACE543131ED5E9BF00DEFB2E /* Crashlytics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ACE543111ED5E9BF00DEFB2E /* Crashlytics.framework */; };
 		CF35B47630F7751C210D2E43 /* Pods_G_Shot.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 87642E5463662F0222602B12 /* Pods_G_Shot.framework */; };
 /* End PBXBuildFile section */
 
@@ -48,12 +50,14 @@
 		AC8604181EBDA10D009ECA54 /* he */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = he; path = he.lproj/Localizable.strings; sourceTree = "<group>"; };
 		ACB4B6631EC43FB10005727D /* extension+UIImage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "extension+UIImage.swift"; sourceTree = "<group>"; };
 		ACB8F66D1EC86A370096FC0F /* SplashViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SplashViewController.swift; sourceTree = "<group>"; };
-		ACDD39251EBCF9CC0052D371 /* G-Shot.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = "G-Shot.app"; path = "G-Book.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		ACDD39251EBCF9CC0052D371 /* G-Book.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "G-Book.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		ACDD39281EBCF9CC0052D371 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		ACDD392D1EBCF9CC0052D371 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		ACDD39321EBCF9CC0052D371 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		ACDD39341EBCF9CC0052D371 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		ACDD393A1EBCFE5E0052D371 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		ACE543101ED5E9BF00DEFB2E /* Fabric.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Fabric.framework; sourceTree = "<group>"; };
+		ACE543111ED5E9BF00DEFB2E /* Crashlytics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Crashlytics.framework; sourceTree = "<group>"; };
 		C86AE290764A72FA795901F3 /* Pods-G-Shot.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-G-Shot.release.xcconfig"; path = "Pods/Target Support Files/Pods-G-Shot/Pods-G-Shot.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -63,6 +67,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				CF35B47630F7751C210D2E43 /* Pods_G_Shot.framework in Frameworks */,
+				ACE543131ED5E9BF00DEFB2E /* Crashlytics.framework in Frameworks */,
+				ACE543121ED5E9BF00DEFB2E /* Fabric.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -133,7 +139,7 @@
 		ACDD39261EBCF9CC0052D371 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				ACDD39251EBCF9CC0052D371 /* G-Shot.app */,
+				ACDD39251EBCF9CC0052D371 /* G-Book.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -141,6 +147,8 @@
 		ACDD39271EBCF9CC0052D371 /* G-Book */ = {
 			isa = PBXGroup;
 			children = (
+				ACE543101ED5E9BF00DEFB2E /* Fabric.framework */,
+				ACE543111ED5E9BF00DEFB2E /* Crashlytics.framework */,
 				ACDD393A1EBCFE5E0052D371 /* Assets.xcassets */,
 				ACDD39281EBCF9CC0052D371 /* AppDelegate.swift */,
 				ACDD392C1EBCF9CC0052D371 /* Main.storyboard */,
@@ -169,6 +177,7 @@
 				ACDD39231EBCF9CC0052D371 /* Resources */,
 				C4F77A3402ED0A32F175719F /* [CP] Embed Pods Frameworks */,
 				13167169B47509C7C0043003 /* [CP] Copy Pods Resources */,
+				ACE5430F1ED5E95200DEFB2E /* Fabric */,
 			);
 			buildRules = (
 			);
@@ -176,7 +185,7 @@
 			);
 			name = "G-Book";
 			productName = "G-Shot";
-			productReference = ACDD39251EBCF9CC0052D371 /* G-Shot.app */;
+			productReference = ACDD39251EBCF9CC0052D371 /* G-Book.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -264,6 +273,20 @@
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
+		};
+		ACE5430F1ED5E95200DEFB2E /* Fabric */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = Fabric;
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "./Fabric.framework/run a0265e4679bc5e62e7972cff0a3ee020831c32be 1136a502cf260c2d1264e5591c328c85228929053fcd532ed09460fffa185333";
 		};
 		C4F77A3402ED0A32F175719F /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -436,7 +459,12 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = "G-Shot/Helpers/G-Shot.entitlements";
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = F5KP4MVHNE;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/G-Shot",
+				);
 				INFOPLIST_FILE = "G-Shot/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -453,6 +481,10 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = "G-Shot/Helpers/G-Shot.entitlements";
 				DEVELOPMENT_TEAM = F5KP4MVHNE;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/G-Shot",
+				);
 				INFOPLIST_FILE = "G-Shot/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
