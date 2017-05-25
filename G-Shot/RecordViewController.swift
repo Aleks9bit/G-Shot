@@ -179,7 +179,8 @@ class RecordViewController: UIViewController {
       var isEnable = false
       if !watermarkLoaded {
         isEnable = false
-      } else if cameraReady {
+      }
+      if cameraReady && watermarkLoaded {
         isEnable = true
       }
       DispatchQueue.main.async {
@@ -196,7 +197,8 @@ class RecordViewController: UIViewController {
       var isEnable = false
       if !cameraReady {
         isEnable = false
-      } else if watermarkLoaded {
+      }
+      if watermarkLoaded && cameraReady {
         isEnable = true
       }
       DispatchQueue.main.async {
@@ -262,9 +264,17 @@ class RecordViewController: UIViewController {
   override func viewDidAppear(_ animated: Bool) {
     super.viewDidAppear(animated)
 
-      refreshWatermarks()
-      setupCameraSession()
-      startCameraSession()
+    let blockOperation = BlockOperation()
+
+    blockOperation.addExecutionBlock {
+      self.refreshWatermarks()
+      self.setupCameraSession()
+    }
+    blockOperation.completionBlock = {
+      self.startCameraSession()
+    }
+
+    OperationQueue().addOperation(blockOperation)
   }
 
   override func viewDidDisappear(_ animated: Bool) {
@@ -523,28 +533,26 @@ class RecordViewController: UIViewController {
 
   func setupCameraSession() {
 
-    DispatchQueue.global(qos: .background).async {
-      self.captureSession.sessionPreset = self.cameraType == .video ? AVCaptureSessionPresetHigh : AVCaptureSessionPresetPhoto
+    self.captureSession.sessionPreset = self.cameraType == .video ? AVCaptureSessionPresetHigh : AVCaptureSessionPresetPhoto
 
-      guard let videoDevice = self.device(with: self.cameraPosition), let audioDevice = AVCaptureDevice.defaultDevice(withMediaType: AVMediaTypeAudio) else { return }
-      var videoDeviceInput: AVCaptureDeviceInput!
-      var audioDeviceInput: AVCaptureDeviceInput!
-      do {
-        videoDeviceInput = try AVCaptureDeviceInput(device: videoDevice)
-        audioDeviceInput = try AVCaptureDeviceInput(device: audioDevice)
+    guard let videoDevice = self.device(with: self.cameraPosition), let audioDevice = AVCaptureDevice.defaultDevice(withMediaType: AVMediaTypeAudio) else { return }
+    var videoDeviceInput: AVCaptureDeviceInput!
+    var audioDeviceInput: AVCaptureDeviceInput!
+    do {
+      videoDeviceInput = try AVCaptureDeviceInput(device: videoDevice)
+      audioDeviceInput = try AVCaptureDeviceInput(device: audioDevice)
 
-      } catch {
-        print(error.localizedDescription)
-      }
-      if self.captureSession.canAddInput(videoDeviceInput) {
-        self.captureSession.addInput(videoDeviceInput)
-      }
-      if self.captureSession.canAddInput(audioDeviceInput) {
-        self.captureSession.addInput(audioDeviceInput)
-      }
-      if self.captureSession.canAddOutput(self.imageFileOutput) {
-        self.captureSession.addOutput(self.imageFileOutput)
-      }
+    } catch {
+      print(error.localizedDescription)
+    }
+    if self.captureSession.canAddInput(videoDeviceInput) {
+      self.captureSession.addInput(videoDeviceInput)
+    }
+    if self.captureSession.canAddInput(audioDeviceInput) {
+      self.captureSession.addInput(audioDeviceInput)
+    }
+    if self.captureSession.canAddOutput(self.imageFileOutput) {
+      self.captureSession.addOutput(self.imageFileOutput)
     }
   }
 
@@ -569,10 +577,12 @@ class RecordViewController: UIViewController {
     let size = CGSize(width: watermarkImage.bounds.width + 22.7, height: watermarkImage.bounds.height + 22.7)
 
     previewLayer.frame = CGRect(origin: origin, size: size)
-    rootLayer.addSublayer(previewLayer)
+    DispatchQueue.main.async {
+      rootLayer.addSublayer(self.previewLayer)
+    }
 
-    cameraReady = true
     captureSession.startRunning()
+    cameraReady = true
   }
 
   func stopCameraSession() {
