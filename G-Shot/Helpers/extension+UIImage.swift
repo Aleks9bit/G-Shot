@@ -11,7 +11,7 @@ import KRProgressHUD
 
 extension UIImageView {
 
-  func donwnload(from url: URL) {
+  func donwnload(from url: URL, completion: @escaping (Bool) -> Void) {
     KRProgressHUD.show()
     URLSession.shared.dataTask(with: url) { (data, response, error) in
       guard let httpURLResponse = response as? HTTPURLResponse,
@@ -19,12 +19,14 @@ extension UIImageView {
         let data = data,
         error == nil,
         let image = UIImage(data: data) else {
+          completion(false)
           return
       }
       DispatchQueue.main.async {
         self.image = image
         KRProgressHUD.dismiss()
       }
+      completion(true)
     }.resume()
   }
 }

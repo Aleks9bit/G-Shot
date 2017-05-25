@@ -293,6 +293,8 @@ class RecordViewController: UIViewController {
 
 
   func shotPhoto() {
+    cameraReady = false
+    KRProgressHUD.show()
     if let connection = imageFileOutput.connection(withMediaType: AVMediaTypeVideo) {
       imageFileOutput.captureStillImageAsynchronously(from: connection, completionHandler: { (buffer, error) in
         if let error = error {
@@ -301,11 +303,15 @@ class RecordViewController: UIViewController {
         }
         let imageData = AVCaptureStillImageOutput.jpegStillImageNSDataRepresentation(buffer)
         if let image = UIImage(data: (imageData)!) {
-          KRProgressHUD.show()
           self.save(image: image)
           self.exportImageWithWatermark(image)
         }
       })
+    } else {
+      cameraReady = true
+      DispatchQueue.main.async {
+        KRProgressHUD.dismiss()
+      }
     }
   }
 
@@ -330,7 +336,7 @@ class RecordViewController: UIViewController {
 
     UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
 
-    let scale: CGFloat// = max(image.size.width, image.size.height) / UIScreen.main.bounds.width
+    let scale: CGFloat
 
     if image.size.width < image.size.height {
       scale = previewLayer.frame.width / image.size.width
@@ -369,9 +375,8 @@ class RecordViewController: UIViewController {
     blockOperation.completionBlock = {
 
       self.save(image: newImage)
-      DispatchQueue.main.async {
-        KRProgressHUD.dismiss()
-      }
+
+      self.cameraReady = true
     }
     OperationQueue.main.addOperation(blockOperation)
   }
@@ -457,6 +462,8 @@ class RecordViewController: UIViewController {
         DispatchQueue.main.async {
           KRProgressHUD.dismiss()
         }
+
+        self.cameraReady = true
         break
       default:
         DispatchQueue.main.async {
@@ -478,7 +485,11 @@ class RecordViewController: UIViewController {
           albumChangeRequest?.addAssets(assetPlaceholders)
         }
       }
-    }, completionHandler: nil)
+    }, completionHandler: { success in
+      DispatchQueue.main.async {
+        KRProgressHUD.dismiss()
+      }
+    })
   }
 
   func saveVideo(by path: URL) {
@@ -492,7 +503,8 @@ class RecordViewController: UIViewController {
           albumChangeRequest?.addAssets(assetPlaceholders)
         }
       }
-    }, completionHandler: nil)
+    }, completionHandler: { success in
+    })
   }
 
   func getAlbum(complition: @escaping (_ album: PHAssetCollection?) -> Void) {
@@ -717,19 +729,35 @@ class RecordViewController: UIViewController {
             self.watermarks.append(url)
           }
         }
-        if watermarks.count > 1 {
-          DispatchQueue.main.async {
-            self.nextWatermarkButton.isEnabled = true
-          }
-        }
+
         self.updateWatermark()
       }
     }
   }
 
   private func updateWatermark() {
-    watermarkLoaded = true
-    watermarkImage.donwnload(from: watermarks[watermarkCount])
+    watermarkImage.donwnload(from: watermarks[watermarkCount], completion: { success in
+      if success {
+        self.watermarkLoaded = true
+      }
+      var isShowNext = false
+      var isShowPrev = false
+      if self.watermarks.count > 1 {
+        isShowNext = true
+      }
+      if self.watermarks.count - 1 == self.watermarkCount {
+        isShowNext = false
+      }
+      if self.watermarkCount == 0 {
+        isShowPrev = false
+      } else {
+        isShowPrev = true
+      }
+      DispatchQueue.main.async {
+        self.nextWatermarkButton.isEnabled = isShowNext
+        self.prevWatermarkButton.isEnabled = isShowPrev
+      }
+    })
   }
 
   func changeWatermark(_ sender: UIButton) {
@@ -738,28 +766,10 @@ class RecordViewController: UIViewController {
       if watermarkCount > 0 {
         watermarkCount -= 1
       }
-      if watermarkCount == 0 {
-        DispatchQueue.main.async {
-          self.prevWatermarkButton.isEnabled = false
-        }
-      } else {
-        DispatchQueue.main.async {
-          self.nextWatermarkButton.isEnabled = true
-        }
-      }
       break
     case nextWatermarkButton:
       if watermarkCount < watermarks.count - 1 {
         watermarkCount += 1
-      }
-      if watermarkCount == watermarks.count - 1 {
-        DispatchQueue.main.async {
-          self.nextWatermarkButton.isEnabled = false
-        }
-      } else {
-        DispatchQueue.main.async {
-          self.prevWatermarkButton.isEnabled = true
-        }
       }
       break
     default: break
