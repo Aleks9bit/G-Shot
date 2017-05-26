@@ -72,6 +72,7 @@ class WebViewViewController: UIViewController {
 
     webView = WKWebView()
     self.view = webView
+    webView?.navigationDelegate = self
     webView?.allowsBackForwardNavigationGestures = true
     webView?.addObserver(self, forKeyPath: "loading", options: .new, context: nil)
 
@@ -103,5 +104,19 @@ class WebViewViewController: UIViewController {
   }
   func handleForward() {
     webView?.goForward()
+  }
+}
+
+extension WebViewViewController: WKNavigationDelegate {
+  func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
+
+    let targetURL = navigationAction.request.url
+    if navigationAction.navigationType == WKNavigationType.linkActivated && (targetURL != nil) {
+      UIApplication.shared.openURL(targetURL!)
+      decisionHandler(WKNavigationActionPolicy.cancel)
+    } else {
+      decisionHandler(WKNavigationActionPolicy.allow)
+    }
+
   }
 }
